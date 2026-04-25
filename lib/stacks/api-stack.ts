@@ -244,6 +244,7 @@ export class ApiStack extends cdk.Stack {
         FAMILIES_TABLE: familiesTable,
         FAMILY_MEMBERS_TABLE: tables.familyMembers.tableName,
         WHATSAPP_SECRETS_ARN: secrets.whatsapp.secretArn,
+        TREE_URL: (this.node.tryGetContext('treeUrl') as string | undefined) ?? '',
       },
       logRetention: logs.RetentionDays.ONE_MONTH,
       bundling: {
