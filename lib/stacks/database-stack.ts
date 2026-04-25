@@ -11,6 +11,7 @@ export interface MamaTables {
   memories: dynamodb.Table;
   carpools: dynamodb.Table;
   trivia: dynamodb.Table;
+  authUsers: dynamodb.Table;
 }
 
 export class DatabaseStack extends cdk.Stack {
@@ -81,6 +82,12 @@ export class DatabaseStack extends cdk.Stack {
       indexName: 'side-generation-index',
       partitionKey: { name: 'side', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'generation', type: dynamodb.AttributeType.NUMBER },
+      projectionType: dynamodb.ProjectionType.ALL,
+    });
+
+    familyMembers.addGlobalSecondaryIndex({
+      indexName: 'email-index',
+      partitionKey: { name: 'email', type: dynamodb.AttributeType.STRING },
       projectionType: dynamodb.ProjectionType.ALL,
     });
 
@@ -243,6 +250,18 @@ export class DatabaseStack extends cdk.Stack {
     });
 
     // ----------------------------------------------------------------
+    // mama_auth_users  ← stores hashed passwords for email/password login
+    // PK: email (string)
+    // ----------------------------------------------------------------
+    const authUsers = new dynamodb.Table(this, 'AuthUsers', {
+      tableName: 'mama-auth-users',
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      partitionKey: { name: 'email', type: dynamodb.AttributeType.STRING },
+      pointInTimeRecovery: true,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // ----------------------------------------------------------------
     // Outputs
     // ----------------------------------------------------------------
     new cdk.CfnOutput(this, 'FamiliesTableName', {
@@ -278,6 +297,11 @@ export class DatabaseStack extends cdk.Stack {
       exportName: 'mama-trivia-table',
     });
 
-    this.tables = { families, familyMembers, reunionInfo, tasks, conversationHistory, memories, carpools, trivia };
+    new cdk.CfnOutput(this, 'AuthUsersTableName', {
+      value: authUsers.tableName,
+      exportName: 'mama-auth-users-table',
+    });
+
+    this.tables = { families, familyMembers, reunionInfo, tasks, conversationHistory, memories, carpools, trivia, authUsers };
   }
 }

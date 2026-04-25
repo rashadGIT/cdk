@@ -271,6 +271,7 @@ export class ApiStack extends cdk.Stack {
         FAMILY_MEMBERS_TABLE: tables.familyMembers.tableName,
         REUNION_INFO_TABLE: tables.reunionInfo.tableName,
         TASKS_TABLE: tables.tasks.tableName,
+        AUTH_USERS_TABLE: tables.authUsers.tableName,
         WHATSAPP_SECRETS_ARN: secrets.whatsapp.secretArn,
       },
       logRetention: logs.RetentionDays.ONE_MONTH,
@@ -285,6 +286,7 @@ export class ApiStack extends cdk.Stack {
     tables.familyMembers.grantReadWriteData(adminHandler);
     tables.reunionInfo.grantReadWriteData(adminHandler);
     tables.tasks.grantReadWriteData(adminHandler);
+    tables.authUsers.grantReadWriteData(adminHandler);
     secrets.whatsapp.grantRead(adminHandler);
 
     // ── EmailHandler Lambda ────────────────────────────────────────────────
